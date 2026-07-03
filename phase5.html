@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المرحلة 5</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            color: #00e5ff;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @keyframes p { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .msg { font-size: 12px; letter-spacing: 2px; animation: p 1.2s infinite; }
+    </style>
+</head>
+<body>
+<div class="msg">PHASE 5 — LOADING...</div>
+<script>
+
+// ================================================================
+// phase5.html — المرحلة الخامسة
+// العنوان: "الاعتراف الأول"
+// ================================================================
+// القصة:
+// Architect أخيراً بيعترف بجزء من الحقيقة.
+// بيقول إن origin.dat فعلاً موجود منذ زمان —
+// بس مش هو اللي حطه — في جهة تالتة.
+// Hectari بيقول إن Architect بيكدب لسه
+// وإن الجهة التالتة دي هي نفسها Architect.
+// اللاعب لازم يقرر — مين بيصدق؟
+// ودي أول مرة اللاعب يتواجه بسؤال مباشر:
+// "هتصدق Architect ولا Hectari؟"
+// ================================================================
+
+var isFirstTime = localStorage.getItem('phase5_initialized') !== '1';
+
+localStorage.setItem('currentPhase', 'phase5');
+localStorage.setItem('gameProgress',  'phase5');
+
+if (isFirstTime) {
+    localStorage.setItem('phase5_initialized', '1');
+
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('clipboard');
+
+    localStorage.setItem('badge_chat',     '1');
+    localStorage.setItem('badge_terminal', '0');
+
+    var initNotes = [{
+        id:      Date.now(),
+        phaseId: 'phase5_welcome',
+        title:   'Architect',
+        content: 'حان وقت أقولك جزء من الحقيقة.\n' +
+                 'بس بس جزء — مش الكل.\n' +
+                 'الكل هيجي في وقته.',
+        code:    '',
+        tag:     'note',
+        date:    new Date().toISOString()
+    }];
+    localStorage.setItem('gameNotes', JSON.stringify(initNotes));
+
+    // ================================================================
+    // رسائل A.ai
+    // أول اعتراف حقيقي من Architect
+    // ================================================================
+    var chatSteps = [
+
+        {
+            id: 'start',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'لازم أقولك حاجة.',
+                    delay:  800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'origin.dat — أيوه، أنا عارفه.\n' +
+                            'مش أنا اللي حطيته —\n' +
+                            'بس أنا شفته من زمان ومعلقتش عليه.',
+                    delay:  1600
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'في جهة تالتة — مش أنا ومش Hectari —\n' +
+                            'هي اللي بدأت الموضوع ده كله.\n' +
+                            'Hectari مجرد أداة زيك أنت.',
+                    delay:  1600
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'أنا مش قادر أقولك أكتر من كده دلوقتي.\n' +
+                            'روح Terminal — وهتشوف.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '💻 افتح Terminal',
+                target: 'terminal.html'
+            }
+        },
+
+        {
+            id: 'after_check',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'شفت النتيجة؟\n' +
+                            'في entity تالت فعلاً.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'دلوقتي السؤال المهم:\n' +
+                            'هتصدقني أنا ولا هتصدق Hectari؟',
+                    delay:  1200
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'القرار ده مهم —\n' +
+                            'ومش لازم تاخده دلوقتي.\n' +
+                            'بس حل اللغز ده الأول.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '🧩 ابدأ اللغز',
+                target: 'puzzle_word.html'
+            }
+        },
+
+        {
+            id: 'after_puzzle',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الكود في المفكرة.\n' +
+                            'الصقه في Terminal.',
+                    delay:  800
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '📒 روح المفكرة',
+                        value:  'notes',
+                        action: 'open',
+                        target: 'notes.html'
+                    },
+                    {
+                        label:  '💻 روح Terminal',
+                        value:  'term',
+                        action: 'open',
+                        target: 'terminal.html'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'choose_side',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'حان وقت القرار.',
+                    delay:  800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'مين هتصدق؟\n' +
+                            'أنا اللي بحاول أحميك —\n' +
+                            'ولا Hectari اللي بيدعي إني كاذب؟',
+                    delay:  1400
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '✅ أصدق Architect',
+                        value:  'trust_arch',
+                        action: 'next'
+                    },
+                    {
+                        label:  '❓ مش متأكد',
+                        value:  'not_sure',
+                        action: 'next'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'phase_end',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'شكراً على قرارك.\n' +
+                            'سواء صدقتني أو لا —\n' +
+                            'هنكمل مع بعض.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الجهة التالتة دي —\n' +
+                            'هنعرف مين هي في وقتها.\n' +
+                            'بس دلوقتي لسه بدري.',
+                    delay:  1200
+                },
+                {
+                    type:  'system',
+                    text:  '✅ اكتملت المرحلة الخامسة',
+                    delay: 600
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '▶ المرحلة التالية',
+                target: 'phase6.html'
+            }
+        }
+    ];
+
+    localStorage.setItem('chatSteps', JSON.stringify(chatSteps));
+
+    // ================================================================
+    // أوامر Terminal
+    // ================================================================
+    var termCmds = [
+
+        {
+            cmd:  '__hectari_intro__',
+            text: 'Architect اعترف أخيراً بجزء من الحقيقة؟\n' +
+                  '"جهة تالتة"؟\n' +
+                  'ده أذكى كذبة قالها لحد دلوقتي.\n' +
+                  'الجهة التالتة دي اسمها Architect نفسه.\n' +
+                  'اكتب: entity_check\n' +
+                  'وهتشوف.'
+        },
+
+        {
+            cmd: 'entity_check',
+            response: [
+                { text: 'Checking active entities...',     cls: 'dim',    delay: 300 },
+                { text: 'Entity 1: Architect — CONFIRMED', cls: 'success',delay: 400 },
+                { text: 'Entity 2: Hectari — CONFIRMED',   cls: 'warn',   delay: 300 },
+                { text: 'Entity 3: [SCANNING...]',         cls: 'dim',    delay: 500 },
+                { text: 'Entity 3: DETECTED — ANONYMOUS',  cls: 'error',  delay: 400 },
+                { text: 'Signature: UNKNOWN',              cls: 'error',  delay: 200 },
+                { text: 'Location: DEEP SYSTEM',           cls: 'warn',   delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'after_check' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'trust_arch',
+            response: [
+                { text: 'Registering decision: TRUST ARCHITECT', cls: 'system', delay: 200 },
+                { text: 'Decision logged.',                       cls: 'success',delay: 300 },
+                { text: 'Proceeding with Architect protocol.',    cls: 'output', delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'phase_end' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'help',
+            response: [
+                { text: 'COMMANDS:',                               cls: 'system' },
+                { text: '  entity_check — check active entities',  cls: 'output', delay: 60 },
+                { text: '  trust_arch   — register trust decision', cls: 'output', delay: 60 },
+                { text: '  clear        — clear screen',           cls: 'output', delay: 60 }
+            ]
+        }
+    ];
+
+    localStorage.setItem('terminalCommands', JSON.stringify(termCmds));
+
+    // ================================================================
+    // اللغز — Word (لغز الكلمة)
+    // ================================================================
+    var puzzleCfg = {
+        type:           'word',
+        title:          'اختبار المرحلة 5',
+        desc:           'Architect بيقولك:<br>' +
+                        '<em>"الجهة التالتة دي تركت اسمها في النظام.<br>' +
+                        'الاسم ده مقلوب — رتّب الحروف."</em>',
+        word:           'PHANTOM',
+        jumbled:        null,
+        hint:           'تلميح: شبح — حاجة موجودة بس مش شايفها',
+        timeLimit:      0,
+        winMsg:         'ممتاز! الكود في المفكرة.',
+        winTarget:      'chat.html',
+        backTarget:     'launcher.html',
+        winNoteTitle:   'Architect',
+        winNoteContent: 'اسم الجهة التالتة: PHANTOM\n' +
+                        'ده مش اسم حقيقي — ده اسم كودي.\n' +
+                        'الكود للخطوة الجاية: trust_arch',
+        winNoteCode:    'trust_arch',
+        winNoteTag:     'cmd',
+        winNotePhaseId: 'phase5_puzzle_win'
+    };
+
+    localStorage.setItem('puzzleConfig', JSON.stringify(puzzleCfg));
+}
+
+window.onPhaseComplete = function(nextFile) {
+    localStorage.removeItem('phase5_initialized');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('terminalCommands');
+    localStorage.removeItem('chatSteps');
+    localStorage.removeItem('puzzleConfig');
+    localStorage.removeItem('clipboard');
+    localStorage.removeItem('gameNotes');
+
+    var next = nextFile || 'phase6.html';
+    var num  = next.replace('phase','').replace('.html','');
+    localStorage.setItem('currentPhase', 'phase' + num);
+    localStorage.setItem('gameProgress',  'phase' + num);
+
+    window.location.href = next;
+};
+
+setTimeout(function() {
+    window.location.href = 'launcher.html';
+}, 500);
+
+</script>
+</body>
+</html>

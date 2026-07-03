@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المرحلة 9</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            color: #00e5ff;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @keyframes p { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .msg { font-size: 12px; letter-spacing: 2px; animation: p 1.2s infinite; }
+    </style>
+</head>
+<body>
+<div class="msg">PHASE 9 — LOADING...</div>
+<script>
+
+// ================================================================
+// phase9.html — المرحلة التاسعة
+// العنوان: "ARCHITECT"
+// ================================================================
+// القصة:
+// الاسم الكامل للسيرفر اتكشف: ARCHITECT
+// Hectari بيقول إن ده دليل قاطع إن Architect
+// هو صاحب السيرفر — وبالتالي هو اللي سرق البيانات.
+// Architect بيقول إن السيرفر ده اتسرق منه —
+// حد تاني أخد اسمه ونظامه.
+// اللاعب في أعلى درجات الشك —
+// مين بيصدق؟
+// الـ glitch بيبدأ يظهر في رسايل Architect.
+// ================================================================
+
+var isFirstTime = localStorage.getItem('phase9_initialized') !== '1';
+
+localStorage.setItem('currentPhase', 'phase9');
+localStorage.setItem('gameProgress',  'phase9');
+
+if (isFirstTime) {
+    localStorage.setItem('phase9_initialized', '1');
+
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('clipboard');
+
+    localStorage.setItem('badge_chat',     '1');
+    localStorage.setItem('badge_terminal', '0');
+
+    var initNotes = [{
+        id:      Date.now(),
+        phaseId: 'phase9_welcome',
+        title:   'Architect',
+        content: 'اسم السيرفر: ARCHITECT\n' +
+                 'أنا عارف إن ده بيخليك تشك فيا.\n' +
+                 'بس كل حاجة ليها تفسير.',
+        code:    '',
+        tag:     'note',
+        date:    new Date().toISOString()
+    }];
+    localStorage.setItem('gameNotes', JSON.stringify(initNotes));
+
+    var chatSteps = [
+
+        {
+            id: 'start',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'السيرفر اسمه ARCHITECT.\n' +
+                            'أنا عارف اللي بتفكر فيه.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'بس استمعلي.\n' +
+                            'السيرفر ده كان بتاعي — من 4 سنين.\n' +
+                            'حد سرقه مني واستخدمه ضدي.',
+                    delay:  1600
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    // glitch في النص
+                    text:   'أنا م̷ش̷ ا̷ل̷ع̷د̷و̷.\n' +
+                            'أنا ضحية زيك.\n' +
+                            'روح Terminal.',
+                    delay:  1400
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '💻 افتح Terminal',
+                target: 'terminal.html'
+            }
+        },
+
+        {
+            id: 'after_verify',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'شفت؟ السيرفر اتسجل بعد ما اتسرق مني.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'بس في مشكلة.\n' +
+                            'الشخص اللي سرقه — عارف كل حاجة عني.\n' +
+                            'كل كودي — كل أساليبي.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'ده معناه إنه كان قريب مني جداً.\n' +
+                            'حل اللغز ده — وهنعرف مين.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '🧩 ابدأ اللغز',
+                target: 'puzzle1.html'
+            }
+        },
+
+        {
+            id: 'after_puzzle',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الكود في المفكرة.\n' +
+                            'الصقه في Terminal.',
+                    delay:  800
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '📒 روح المفكرة',
+                        value:  'notes',
+                        action: 'open',
+                        target: 'notes.html'
+                    },
+                    {
+                        label:  '💻 روح Terminal',
+                        value:  'term',
+                        action: 'open',
+                        target: 'terminal.html'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'phase_end',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الشخص اللي سرق السيرفر —\n' +
+                            'كان شريكي زمان.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'اتخانقنا — وهو اخد كل حاجة.\n' +
+                            'اسمه الكودي كان H.',
+                    delay:  1400
+                },
+                {
+                    type:  'system',
+                    text:  '⚠️ H — نفس أول حرف في Hectari؟',
+                    delay: 800
+                },
+                {
+                    type:  'system',
+                    text:  '✅ اكتملت المرحلة التاسعة',
+                    delay: 600
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '▶ المرحلة التالية',
+                target: 'phase10.html'
+            }
+        }
+    ];
+
+    localStorage.setItem('chatSteps', JSON.stringify(chatSteps));
+
+    var termCmds = [
+
+        {
+            cmd:  '__hectari_intro__',
+            text: 'ARCHITECT.\n' +
+                  'اسم السيرفر هو اسمه هو.\n' +
+                  'وبيقولك إن حد "سرقه"؟\n' +
+                  'طبعاً — ده الكلام اللي بيقوله\n' +
+                  'لما بيتضبط.\n' +
+                  'اكتب: verify_server\n' +
+                  'وشوف التاريخ.'
+        },
+
+        {
+            cmd: 'verify_server',
+            response: [
+                { text: 'Verifying server ownership...',    cls: 'dim',    delay: 300 },
+                { text: '',                                 cls: 'dim'               },
+                { text: 'SERVER HISTORY:',                  cls: 'system', delay: 200 },
+                { text: 'Original owner: Architect',        cls: 'warn',   delay: 300 },
+                { text: 'Ownership transfer: [4 YRS AGO]', cls: 'output', delay: 200 },
+                { text: 'Transfer type: FORCED',            cls: 'error',  delay: 200 },
+                { text: 'New owner: [UNKNOWN]',             cls: 'error',  delay: 200 },
+                { text: 'Current use: DATA COLLECTION',    cls: 'error',  delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'after_verify' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'who_stole',
+            response: [
+                { text: 'Searching ownership records...',   cls: 'dim',    delay: 300 },
+                { text: 'Records found.',                   cls: 'success',delay: 400 },
+                { text: '',                                 cls: 'dim'               },
+                { text: 'Thief signature: H.[ENCRYPTED]',  cls: 'error',  delay: 300 },
+                { text: 'Known associate of: Architect',   cls: 'warn',   delay: 200 },
+                { text: 'Relationship: EX-PARTNER',        cls: 'output', delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'phase_end' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'help',
+            response: [
+                { text: 'COMMANDS:',                               cls: 'system' },
+                { text: '  verify_server — verify server history', cls: 'output', delay: 60 },
+                { text: '  who_stole     — find who stole server', cls: 'output', delay: 60 },
+                { text: '  clear         — clear screen',          cls: 'output', delay: 60 }
+            ]
+        }
+    ];
+
+    localStorage.setItem('terminalCommands', JSON.stringify(termCmds));
+
+    var puzzleCfg = {
+        type:           'pairs',
+        title:          'اختبار المرحلة 9',
+        desc:           'Architect بيقولك:<br>' +
+                        '<em>"كل زوج من دول بيمثل معلومة عن الشخص اللي سرق السيرفر.<br>' +
+                        'طابق الأزواج الصح."</em>',
+        pairsEmojis:    ['🔑','💻','🌐','⚡','🕵️','🗝️'],
+        timeLimit:      0,
+        winMsg:         'ممتاز! الكود في المفكرة.',
+        winTarget:      'chat.html',
+        backTarget:     'launcher.html',
+        winNoteTitle:   'Architect',
+        winNoteContent: 'لقينا الشخص: H — شريكي السابق.\n' +
+                        'ده هو Hectari.\n' +
+                        'الكود للخطوة الجاية: who_stole',
+        winNoteCode:    'who_stole',
+        winNoteTag:     'cmd',
+        winNotePhaseId: 'phase9_puzzle_win'
+    };
+
+    localStorage.setItem('puzzleConfig', JSON.stringify(puzzleCfg));
+}
+
+window.onPhaseComplete = function(nextFile) {
+    localStorage.removeItem('phase9_initialized');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('terminalCommands');
+    localStorage.removeItem('chatSteps');
+    localStorage.removeItem('puzzleConfig');
+    localStorage.removeItem('clipboard');
+    localStorage.removeItem('gameNotes');
+
+    var next = nextFile || 'phase10.html';
+    var num  = next.replace('phase','').replace('.html','');
+    localStorage.setItem('currentPhase', 'phase' + num);
+    localStorage.setItem('gameProgress',  'phase' + num);
+
+    window.location.href = next;
+};
+
+setTimeout(function() {
+    window.location.href = 'launcher.html';
+}, 500);
+
+</script>
+</body>
+</html>

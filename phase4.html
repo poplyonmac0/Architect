@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المرحلة 4</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            color: #00e5ff;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @keyframes p { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .msg { font-size: 12px; letter-spacing: 2px; animation: p 1.2s infinite; }
+    </style>
+</head>
+<body>
+<div class="msg">PHASE 4 — LOADING...</div>
+<script>
+
+// ================================================================
+// phase4.html — المرحلة الرابعة
+// العنوان: "السؤال الممنوع"
+// ================================================================
+// القصة:
+// اللاعب سأل Architect عن origin.dat
+// زي ما قاله الشخص في الجهاز التاني.
+// Architect بيتصرف غريب — بيتهرب من السؤال.
+// Hectari بيقول إن origin.dat ده دليل على إن
+// Architect هو اللي بدأ الاختراق من الأول.
+// اللاعب بيبدأ يشك فعلاً — بس لسه مش متأكد.
+// ================================================================
+
+var isFirstTime = localStorage.getItem('phase4_initialized') !== '1';
+
+localStorage.setItem('currentPhase', 'phase4');
+localStorage.setItem('gameProgress',  'phase4');
+
+if (isFirstTime) {
+    localStorage.setItem('phase4_initialized', '1');
+
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('clipboard');
+
+    localStorage.setItem('badge_chat',     '1');
+    localStorage.setItem('badge_terminal', '0');
+
+    var initNotes = [{
+        id:      Date.now(),
+        phaseId: 'phase4_welcome',
+        title:   'Architect',
+        content: 'أنا عارف إنك هتسألني عن origin.dat.\n' +
+                 'الإجابة مش بسيطة.\n' +
+                 'بس ثق فيا — أنا بيحميك.',
+        code:    '',
+        tag:     'note',
+        date:    new Date().toISOString()
+    }];
+    localStorage.setItem('gameNotes', JSON.stringify(initNotes));
+
+    // ================================================================
+    // رسائل A.ai
+    // Architect بيتهرب ولأول مرة مش بيجيب إجابة واضحة
+    // ================================================================
+    var chatSteps = [
+
+        {
+            id: 'start',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'سألتني عن origin.dat.',
+                    delay:  800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الملف ده…\n' +
+                            'موضوعه معقد.\n' +
+                            'مش الوقت المناسب أشرحه دلوقتي.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'اللي المهم دلوقتي إننا نركز على Hectari.\n' +
+                            'هو بيحاول يستغل الموقف.\n' +
+                            'روح Terminal.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '💻 افتح Terminal',
+                target: 'terminal.html'
+            }
+        },
+
+        {
+            id: 'after_read',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'شفت محتوى الملف؟',
+                    delay:  800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'أنا عارف إن ده بيخليك تشك فيا.\n' +
+                            'بس اللي في الملف ده مش كامل —\n' +
+                            'Hectari عدّل فيه.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'لو مصدقتش كلامي —\n' +
+                            'حل اللغز ده.\n' +
+                            'النتيجة هتوضحلك جزء من الحقيقة.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '🧩 ابدأ اللغز',
+                target: 'puzzle_cipher.html'
+            }
+        },
+
+        {
+            id: 'after_puzzle',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الكود في المفكرة.\n' +
+                            'الصقه في Terminal.',
+                    delay:  800
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '📒 روح المفكرة',
+                        value:  'notes',
+                        action: 'open',
+                        target: 'notes.html'
+                    },
+                    {
+                        label:  '💻 روح Terminal',
+                        value:  'term',
+                        action: 'open',
+                        target: 'terminal.html'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'phase_end',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'عملت كويس.\n' +
+                            'بس أنا عارف إنك لسه مش مصدق كل حاجة.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'ده طبيعي.\n' +
+                            'الشك علامة إنك بتفكر صح.\n' +
+                            'بس الشك مش معناه إنك توقف.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'في المرحلة الجاية —\n' +
+                            'هتعرف حاجة أكبر بكتير.',
+                    delay:  1200
+                },
+                {
+                    type:  'system',
+                    text:  '✅ اكتملت المرحلة الرابعة',
+                    delay: 600
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '▶ المرحلة التالية',
+                target: 'phase5.html'
+            }
+        }
+    ];
+
+    localStorage.setItem('chatSteps', JSON.stringify(chatSteps));
+
+    // ================================================================
+    // أوامر Terminal
+    // Hectari بيستغل شك اللاعب
+    // ================================================================
+    var termCmds = [
+
+        {
+            cmd:  '__hectari_intro__',
+            text: 'سألت Architect عن origin.dat؟\n' +
+                  'وإيه اللي قالك؟\n' +
+                  'إنه "مش الوقت المناسب"؟\n' +
+                  'ده لأنه مش قادر يكدب عليك بشكل واضح.\n' +
+                  'اكتب: read origin\n' +
+                  'وهتشوف الحقيقة بنفسك.'
+        },
+
+        {
+            cmd: 'read origin',
+            response: [
+                { text: 'Reading origin.dat...',           cls: 'dim',    delay: 300 },
+                { text: 'Partial decryption...',           cls: 'dim',    delay: 400 },
+                { text: '',                                cls: 'dim'               },
+                { text: '[origin.dat — PARTIAL CONTENT]',  cls: 'system', delay: 200 },
+                { text: 'Initiator: A.R.C.H.I.T.E.C.T',  cls: 'warn',   delay: 300 },
+                { text: 'Target: User device',             cls: 'warn',   delay: 200 },
+                { text: 'Purpose: [REDACTED]',             cls: 'error',  delay: 200 },
+                { text: 'Status: Phase 1 complete.',       cls: 'output', delay: 200 },
+                { text: 'Note: User unaware.',             cls: 'error',  delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'after_read' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'verify_data',
+            response: [
+                { text: 'Running data verification...',    cls: 'dim',    delay: 300 },
+                { text: 'Checking file integrity...',      cls: 'dim',    delay: 300 },
+                { text: 'Modifications detected: YES',     cls: 'warn',   delay: 300 },
+                { text: 'Modified by: UNKNOWN',            cls: 'error',  delay: 200 },
+                { text: 'Original vs Current: DIFFERENT',  cls: 'warn',   delay: 200 },
+                { text: 'Conclusion: File was altered.',   cls: 'output', delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'phase_end' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'help',
+            response: [
+                { text: 'COMMANDS:',                              cls: 'system' },
+                { text: '  read origin  — read origin.dat',       cls: 'output', delay: 60 },
+                { text: '  verify_data  — verify file integrity', cls: 'output', delay: 60 },
+                { text: '  clear        — clear screen',          cls: 'output', delay: 60 }
+            ]
+        }
+    ];
+
+    localStorage.setItem('terminalCommands', JSON.stringify(termCmds));
+
+    // ================================================================
+    // اللغز — Cipher
+    // ================================================================
+    var puzzleCfg = {
+        type:           'cipher',
+        title:          'اختبار المرحلة 4',
+        desc:           'Architect بيقولك:<br>' +
+                        '<em>"الملف المعدّل فيه رسالة مشفرة.<br>' +
+                        'فك الشفرة دي — وهتعرف مين عدّل الملف."</em>',
+        encrypted:      'HXDIFYX',
+        cipherKey:      {
+            H:'U', X:'N', D:'K', I:'N', F:'O', Y:'W', E:'N'
+        },
+        answer:         'UNKNOWN',
+        winMsg:         'ممتاز! الكود في المفكرة.',
+        winTarget:      'chat.html',
+        backTarget:     'launcher.html',
+        winNoteTitle:   'Architect',
+        winNoteContent: 'نتيجة فك الشفرة: UNKNOWN\n' +
+                        'مش هو اللي عدّل الملف — بس مين؟\n' +
+                        'الكود للخطوة الجاية:\nverify_data',
+        winNoteCode:    'verify_data',
+        winNoteTag:     'cmd',
+        winNotePhaseId: 'phase4_puzzle_win'
+    };
+
+    localStorage.setItem('puzzleConfig', JSON.stringify(puzzleCfg));
+}
+
+window.onPhaseComplete = function(nextFile) {
+    localStorage.removeItem('phase4_initialized');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('terminalCommands');
+    localStorage.removeItem('chatSteps');
+    localStorage.removeItem('puzzleConfig');
+    localStorage.removeItem('clipboard');
+    localStorage.removeItem('gameNotes');
+
+    var next = nextFile || 'phase5.html';
+    var num  = next.replace('phase','').replace('.html','');
+    localStorage.setItem('currentPhase', 'phase' + num);
+    localStorage.setItem('gameProgress',  'phase' + num);
+
+    window.location.href = next;
+};
+
+setTimeout(function() {
+    window.location.href = 'launcher.html';
+}, 500);
+
+</script>
+</body>
+</html>

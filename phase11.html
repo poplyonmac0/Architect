@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>قريباً</title>
+    <style>
+        * {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #000;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, 'SF Pro Text', 'Segoe UI', monospace, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== الخلفية ===== */
+        .bg {
+            position: fixed;
+            inset: 0;
+            background-image: url('pics/menu_bg.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            filter: brightness(0.35);
+        }
+
+        /* طبقة فوق الخلفية */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.2) 0%,
+                rgba(0,0,0,0.6) 60%,
+                rgba(0,0,0,0.92) 100%
+            );
+            z-index: 1;
+        }
+
+        /* scan line */
+        @keyframes scan {
+            0%   { top: -10%; opacity: 0.06; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        .scan {
+            position: fixed;
+            left: 0; width: 100%; height: 2px;
+            background: linear-gradient(to right,
+                transparent, rgba(0,229,255,0.3), transparent);
+            pointer-events: none;
+            z-index: 2;
+            animation: scan 5s linear infinite;
+        }
+
+        /* CRT */
+        .crt {
+            position: fixed; inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px
+            );
+            pointer-events: none; z-index: 2;
+        }
+
+        /* ===== المحتوى ===== */
+        .content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            padding: 20px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        /* أيقونة القفل */
+        .lock-icon {
+            font-size: 64px;
+            filter: drop-shadow(0 0 20px rgba(0,229,255,0.4));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-10px); }
+        }
+
+        /* رقم المرحلة */
+        .phase-num {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: rgba(0,229,255,0.6);
+            font-family: monospace;
+            text-transform: uppercase;
+        }
+
+        /* العنوان الرئيسي */
+        .main-title {
+            font-size: 38px;
+            font-weight: 900;
+            color: #fff;
+            text-align: center;
+            line-height: 1.15;
+            text-shadow: 0 0 40px rgba(0,229,255,0.2);
+        }
+
+        .main-title span { color: #00e5ff; }
+
+        /* النص */
+        .sub-text {
+            font-size: 15px;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            line-height: 1.7;
+            direction: rtl;
+        }
+
+        /* شريط التقدم وهمي */
+        .progress-wrap {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-family: monospace;
+            color: rgba(0,229,255,0.5);
+            direction: ltr;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00e5ff, #0088aa);
+            border-radius: 10px;
+            animation: progressAnim 3s ease-in-out infinite;
+        }
+
+        @keyframes progressAnim {
+            0%   { width: 0%; }
+            50%  { width: 75%; }
+            100% { width: 0%; }
+        }
+
+        /* نقاط التحميل */
+        .loading-dots {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #00e5ff;
+            opacity: 0.3;
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%,100% { opacity: 0.2; transform: scale(1); }
+            50%      { opacity: 1;   transform: scale(1.3); }
+        }
+
+        .loading-text {
+            font-size: 11px;
+            font-family: monospace;
+            color: rgba(0,229,255,0.5);
+            letter-spacing: 2px;
+        }
+
+        /* separator */
+        .sep {
+            width: 60px;
+            height: 1px;
+            background: rgba(0,229,255,0.2);
+        }
+
+        /* رسالة Architect */
+        .architect-msg {
+            background: rgba(0,229,255,0.05);
+            border: 1px solid rgba(0,229,255,0.15);
+            border-radius: 16px;
+            padding: 16px 18px;
+            width: 100%;
+        }
+
+        .arch-header {
+            font-size: 10px;
+            font-family: monospace;
+            color: rgba(0,229,255,0.5);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            direction: ltr;
+        }
+
+        .arch-text {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.65;
+            direction: rtl;
+            font-style: italic;
+        }
+
+        /* زرار الرجوع */
+        .back-btn {
+            padding: 13px 32px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:active {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        /* glitch على العنوان */
+        @keyframes glitch {
+            0%,100% { clip-path: none; transform: none; }
+            92%     { clip-path: none; transform: none; }
+            93%     { clip-path: inset(20% 0 60% 0); transform: translate(-3px); }
+            94%     { clip-path: inset(60% 0 20% 0); transform: translate(3px); }
+            95%     { clip-path: none; transform: none; }
+            96%     { clip-path: inset(40% 0 40% 0); transform: translate(-2px); }
+            97%     { clip-path: none; transform: none; }
+        }
+
+        .main-title { animation: glitch 8s infinite; }
+    </style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="overlay"></div>
+<div class="scan"></div>
+<div class="crt"></div>
+
+<div class="content">
+
+    <div class="lock-icon">🔒</div>
+
+    <div class="phase-num" id="phaseLabel">// PHASE ?? — LOCKED</div>
+
+    <div class="main-title">
+        قريباً<br>
+        <span>...</span>
+    </div>
+
+    <div class="sub-text">
+        المراحل الجديدة قيد التطوير.<br>
+        استمر في اللعب وانتظر التحديث.
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="architect-msg">
+        <div class="arch-header">// ARCHITECT — MSG:</div>
+        <div class="arch-text" id="archMsg">
+            "القصة لسه مخلصتش.<br>
+            فيه حاجات كتير هتتكشف.<br>
+            استنى…"
+        </div>
+    </div>
+
+    <div class="progress-wrap">
+        <div class="progress-label">
+            <span>LOADING NEXT PHASE</span>
+            <span id="progressPct">---%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <div class="loading-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <span class="loading-text">DOWNLOADING</span>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">
+        &#8592; الرجوع للقائمة
+    </button>
+
+</div>
+
+<script>
+    // تحميل ثيم
+    (function() {
+        if (localStorage.getItem('gameTheme') === 'light') {
+            document.querySelector('.bg').style.filter = 'brightness(0.5)';
+        }
+    })();
+
+    // رقم المرحلة من URL أو localStorage
+    function getPhaseNum() {
+        var current = localStorage.getItem('currentPhase') || 'phase1';
+        var num     = parseInt(current.replace('phase','')) || 1;
+        return num;
+    }
+
+    // نص عشوائي لـ Architect
+    var archMessages = [
+        '"القصة لسه مخلصتش.\nفيه حاجات كتير هتتكشف.\nاستنى…"',
+        '"أنا شغال.\nالمرحلة الجاية هتفاجئك.\nبس محتاج وقت."',
+        '"Hectari مش هيديني فرصة بسهولة.\nبس أنا هكمل.\nانتظرني."',
+        '"في حاجة بنبنيها ليك.\nلما تجهز — هتعرف."',
+        '"الصبر جزء من اللعبة.\nاللاعب الصح بيستنى."'
+    ];
+
+    function init() {
+        var num = getPhaseNum();
+        document.getElementById('phaseLabel').textContent =
+            '// PHASE ' + num + ' — LOCKED';
+
+        // رسالة عشوائية
+        var msg = archMessages[Math.floor(Math.random() * archMessages.length)];
+        document.getElementById('archMsg').innerHTML =
+            msg.replace(/\n/g, '<br>');
+
+        // نسبة وهمية متحركة
+        animateProgress();
+    }
+
+    function animateProgress() {
+        var pct  = 0;
+        var dir  = 1;
+        var el   = document.getElementById('progressPct');
+        var fill = document.getElementById('progressFill');
+
+        setInterval(function() {
+            pct += dir * (Math.random() * 3);
+            if (pct >= 78) { dir = -1; }
+            if (pct <= 5)  { dir = 1;  }
+            pct = Math.max(0, Math.min(78, pct));
+            el.textContent   = Math.floor(pct) + '%';
+            fill.style.width = pct + '%';
+        }, 300);
+    }
+
+    function goBack() {
+        window.location.href = 'menu.html';
+    }
+
+    function handleBackButton() { goBack(); }
+
+    init();
+</script>
+</body>
+</html>

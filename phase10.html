@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المرحلة 10</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            color: #00e5ff;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @keyframes p { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .msg { font-size: 12px; letter-spacing: 2px; animation: p 1.2s infinite; }
+    </style>
+</head>
+<body>
+<div class="msg">PHASE 10 — LOADING...</div>
+<script>
+
+// ================================================================
+// phase10.html — المرحلة العاشرة
+// العنوان: "الشريك السابق"
+// ================================================================
+// القصة:
+// Architect بيكشف إن Hectari كان شريكه الحقيقي.
+// كانوا بيشتغلوا مع بعض في مشروع اسمه PHANTOM.
+// الهدف كان يحموا الناس من الاختراقات.
+// بس Hectari قرر يستخدم نفس التقنية
+// لحساب نفسه — وسرق كل حاجة.
+// Hectari بيقول إن القصة مختلفة —
+// Architect هو اللي خان الشراكة الأول.
+// اللاعب في المنتصف — مش عارف مين بيصدق.
+// بس في تلميح مهم في الآخر:
+// رسالة قديمة بتظهر — مكتوبة من PHANTOM
+// بخط إيد الاتنين مع بعض.
+// ================================================================
+
+var isFirstTime = localStorage.getItem('phase10_initialized') !== '1';
+
+localStorage.setItem('currentPhase', 'phase10');
+localStorage.setItem('gameProgress',  'phase10');
+
+if (isFirstTime) {
+    localStorage.setItem('phase10_initialized', '1');
+
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('clipboard');
+
+    localStorage.setItem('badge_chat',     '1');
+    localStorage.setItem('badge_terminal', '0');
+
+    var initNotes = [{
+        id:      Date.now(),
+        phaseId: 'phase10_welcome',
+        title:   'Architect',
+        content: 'حان وقت أقولك كل حاجة عن Hectari.\n' +
+                 'بس "كل حاجة" دي ممكن تغير نظرتك لكل حاجة.',
+        code:    '',
+        tag:     'note',
+        date:    new Date().toISOString()
+    }];
+    localStorage.setItem('gameNotes', JSON.stringify(initNotes));
+
+    var chatSteps = [
+
+        {
+            id: 'start',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'Hectari — اسمه الحقيقي مش Hectari.\n' +
+                            'ده اسم كودي.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'هو كان شريكي.\n' +
+                            'اشتغلنا مع بعض سنتين على مشروع PHANTOM.\n' +
+                            'الهدف كان نحمي الناس من الاختراقات.',
+                    delay:  1600
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'بس في يوم —\n' +
+                            'قرر يستخدم التقنية لحساب نفسه.\n' +
+                            'وسرق كل حاجة وراح.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'روح Terminal —\n' +
+                            'هتلاقي الرسالة الأخيرة بيننا.',
+                    delay:  1000
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '💻 افتح Terminal',
+                target: 'terminal.html'
+            }
+        },
+
+        {
+            id: 'after_msg',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'شفت الرسالة؟\n' +
+                            'ده كلام Hectari قبل ما يسرق كل حاجة.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'قالي "الطريق اللي إنت فيه غلط"\n' +
+                            'وبعدها اختفى وسرق كل حاجة.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'دلوقتي إنت في النص.\n' +
+                            'لازم تقرر:\n' +
+                            'مين الصح — أنا ولا هو؟\n' +
+                            'حل اللغز الأول.',
+                    delay:  1400
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '🧩 ابدأ اللغز',
+                target: 'puzzle_word.html'
+            }
+        },
+
+        {
+            id: 'after_puzzle',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الكود في المفكرة.\n' +
+                            'الصقه في Terminal.',
+                    delay:  800
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '📒 روح المفكرة',
+                        value:  'notes',
+                        action: 'open',
+                        target: 'notes.html'
+                    },
+                    {
+                        label:  '💻 روح Terminal',
+                        value:  'term',
+                        action: 'open',
+                        target: 'terminal.html'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'phase_end',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'لقينا الرسالة القديمة.\n' +
+                            'مكتوبة من الاتنين — أنا وهو.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'في الرسالة دي — PHANTOM كان مشروع\n' +
+                            'بنيناه مع بعض بأيدينا.',
+                    delay:  1200
+                },
+                {
+                    type:  'system',
+                    text:  '⚠️ الرسالة موقّعة: "A & H — PHANTOM FOUNDERS"',
+                    delay: 800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'المرحلة الجاية —\n' +
+                            'هتعرف ليه الشراكة دي انكسرت.',
+                    delay:  1200
+                },
+                {
+                    type:  'system',
+                    text:  '✅ اكتملت المرحلة العاشرة',
+                    delay: 600
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '▶ المرحلة التالية',
+                target: 'phase11.html'
+            }
+        }
+    ];
+
+    localStorage.setItem('chatSteps', JSON.stringify(chatSteps));
+
+    var termCmds = [
+
+        {
+            cmd:  '__hectari_intro__',
+            text: 'قالك إني شريكه السابق؟\n' +
+                  'أيوه — ده صح.\n' +
+                  'بس القصة مختلفة.\n' +
+                  'هو اللي خان الشراكة — مش أنا.\n' +
+                  'اكتب: last_message\n' +
+                  'وهتشوف آخر رسالة بيننا.'
+        },
+
+        {
+            cmd: 'last_message',
+            response: [
+                { text: 'Retrieving last message...',       cls: 'dim',    delay: 300 },
+                { text: 'Message found.',                   cls: 'success',delay: 400 },
+                { text: '',                                 cls: 'dim'               },
+                { text: 'FROM: H — TO: Architect',         cls: 'system', delay: 200 },
+                { text: 'DATE: [4 YEARS AGO]',              cls: 'output', delay: 200 },
+                { text: '"الطريق اللي إنت فيه غلط.',       cls: 'warn',   delay: 300 },
+                { text: 'أنا مش هكمل معاك.',               cls: 'warn',   delay: 200 },
+                { text: 'PHANTOM هيبقى بتاعي أنا.',        cls: 'error',  delay: 200 },
+                { text: 'مع السلامة." — H',                cls: 'error',  delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'after_msg' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'find_old_msg',
+            response: [
+                { text: 'Searching archive...',             cls: 'dim',    delay: 300 },
+                { text: 'Old document found.',              cls: 'success',delay: 400 },
+                { text: '',                                 cls: 'dim'               },
+                { text: 'DOCUMENT: PHANTOM FOUNDATION',    cls: 'system', delay: 200 },
+                { text: 'Signed: A & H',                   cls: 'warn',   delay: 200 },
+                { text: 'Date: [6 YEARS AGO]',             cls: 'output', delay: 200 },
+                { text: '"We build PHANTOM together.',     cls: 'output', delay: 300 },
+                { text: 'To protect, not to harm.',        cls: 'output', delay: 200 },
+                { text: 'Whatever happens — this is ours."', cls: 'warn', delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'phase_end' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'help',
+            response: [
+                { text: 'COMMANDS:',                                   cls: 'system' },
+                { text: '  last_message — read last message from H',   cls: 'output', delay: 60 },
+                { text: '  find_old_msg — find old PHANTOM document',  cls: 'output', delay: 60 },
+                { text: '  clear        — clear screen',               cls: 'output', delay: 60 }
+            ]
+        }
+    ];
+
+    localStorage.setItem('terminalCommands', JSON.stringify(termCmds));
+
+    var puzzleCfg = {
+        type:           'word',
+        title:          'اختبار المرحلة 10',
+        desc:           'Architect بيقولك:<br>' +
+                        '<em>"في الرسالة القديمة في كلمة محذوفة.<br>' +
+                        'رتّب الحروف دي عشان تعرفها."</em>',
+        word:           'PARTNER',
+        jumbled:        null,
+        hint:           'تلميح: العلاقة اللي كانت بين Architect وH',
+        timeLimit:      0,
+        winMsg:         'ممتاز! الكود في المفكرة.',
+        winTarget:      'chat.html',
+        backTarget:     'launcher.html',
+        winNoteTitle:   'Architect',
+        winNoteContent: 'الكلمة المحذوفة: PARTNER\n' +
+                        '"Whatever happens — this is ours, PARTNER."\n' +
+                        'الكود للخطوة الجاية: find_old_msg',
+        winNoteCode:    'find_old_msg',
+        winNoteTag:     'cmd',
+        winNotePhaseId: 'phase10_puzzle_win'
+    };
+
+    localStorage.setItem('puzzleConfig', JSON.stringify(puzzleCfg));
+}
+
+window.onPhaseComplete = function(nextFile) {
+    localStorage.removeItem('phase10_initialized');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('terminalCommands');
+    localStorage.removeItem('chatSteps');
+    localStorage.removeItem('puzzleConfig');
+    localStorage.removeItem('clipboard');
+    localStorage.removeItem('gameNotes');
+
+    var next = nextFile || 'phase11.html';
+    var num  = next.replace('phase','').replace('.html','');
+    localStorage.setItem('currentPhase', 'phase' + num);
+    localStorage.setItem('gameProgress',  'phase' + num);
+
+    window.location.href = next;
+};
+
+setTimeout(function() {
+    window.location.href = 'launcher.html';
+}, 500);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المرحلة 6</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            color: #00e5ff;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @keyframes p { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .msg { font-size: 12px; letter-spacing: 2px; animation: p 1.2s infinite; }
+    </style>
+</head>
+<body>
+<div class="msg">PHASE 6 — LOADING...</div>
+<script>
+
+// ================================================================
+// phase6.html — المرحلة السادسة
+// العنوان: "PHANTOM"
+// ================================================================
+// القصة:
+// بعد ما اتكشف اسم PHANTOM —
+// Architect بيقول إن PHANTOM ده كيان مجهول
+// بيتحكم في كل الاختراقات من الخلف.
+// Hectari بيقول إن PHANTOM ده اسم كودي
+// كان بيستخدمه Architect نفسه زمان.
+// اللاعب بيلاقي في Terminal رسالة قديمة
+// مكتوب فيها "PHANTOM" بخط إيد Architect.
+// ================================================================
+
+var isFirstTime = localStorage.getItem('phase6_initialized') !== '1';
+
+localStorage.setItem('currentPhase', 'phase6');
+localStorage.setItem('gameProgress',  'phase6');
+
+if (isFirstTime) {
+    localStorage.setItem('phase6_initialized', '1');
+
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('clipboard');
+
+    localStorage.setItem('badge_chat',     '1');
+    localStorage.setItem('badge_terminal', '0');
+
+    var initNotes = [{
+        id:      Date.now(),
+        phaseId: 'phase6_welcome',
+        title:   'Architect',
+        content: 'PHANTOM ده اسم خطير.\n' +
+                 'لو لقيته في أي حاجة تانية —\n' +
+                 'قولي على طول.',
+        code:    '',
+        tag:     'note',
+        date:    new Date().toISOString()
+    }];
+    localStorage.setItem('gameNotes', JSON.stringify(initNotes));
+
+    var chatSteps = [
+
+        {
+            id: 'start',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'PHANTOM.\n' +
+                            'الاسم ده مش عشوائي.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'PHANTOM ده كيان بيشتغل في الخفاء.\n' +
+                            'مش بيظهر — بس بيتحكم في كل حاجة.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'Hectari أداة في إيده.\n' +
+                            'وجهازك هدف ليه.\n' +
+                            'روح Terminal — هتلاقي حاجة مهمة.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '💻 افتح Terminal',
+                target: 'terminal.html'
+            }
+        },
+
+        {
+            id: 'after_find',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'شفت الرسالة القديمة؟',
+                    delay:  800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'أيوه — أنا كنت بستخدم اسم PHANTOM زمان.\n' +
+                            'بس ده كان اسم كودي لمشروع قديم —\n' +
+                            'مش ليا علاقة بالاختراقات دي.',
+                    delay:  1600
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'حد تاني اخد الاسم ده واستخدمه.\n' +
+                            'حل اللغز ده وهنعرف أكتر.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '🧩 ابدأ اللغز',
+                target: 'puzzle1.html'
+            }
+        },
+
+        {
+            id: 'after_puzzle',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الكود في المفكرة.\n' +
+                            'الصقه في Terminal.',
+                    delay:  800
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '📒 روح المفكرة',
+                        value:  'notes',
+                        action: 'open',
+                        target: 'notes.html'
+                    },
+                    {
+                        label:  '💻 روح Terminal',
+                        value:  'term',
+                        action: 'open',
+                        target: 'terminal.html'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'phase_end',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'عملت كويس.\n' +
+                            'بس اللي اتكشف دلوقتي —\n' +
+                            'بس البداية.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'PHANTOM أكبر مما فكرنا.\n' +
+                            'في المرحلة الجاية —\n' +
+                            'هنبدأ نتقرب من الحقيقة.',
+                    delay:  1400
+                },
+                {
+                    type:  'system',
+                    text:  '✅ اكتملت المرحلة السادسة',
+                    delay: 600
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '▶ المرحلة التالية',
+                target: 'phase7.html'
+            }
+        }
+    ];
+
+    localStorage.setItem('chatSteps', JSON.stringify(chatSteps));
+
+    var termCmds = [
+
+        {
+            cmd:  '__hectari_intro__',
+            text: 'PHANTOM؟\n' +
+                  'أيوه — أنا عارف الاسم ده.\n' +
+                  'ده الاسم اللي كان Architect بيستخدمه\n' +
+                  'لما كان بيشتغل في الجانب التاني.\n' +
+                  'اكتب: find phantom\n' +
+                  'وهتشوف الدليل.'
+        },
+
+        {
+            cmd: 'find phantom',
+            response: [
+                { text: 'Searching for PHANTOM traces...',  cls: 'dim',    delay: 300 },
+                { text: 'Scan complete.',                   cls: 'success',delay: 400 },
+                { text: '',                                 cls: 'dim'               },
+                { text: 'OLD MESSAGE FOUND:',               cls: 'system', delay: 200 },
+                { text: 'From: Architect',                  cls: 'warn',   delay: 200 },
+                { text: 'Date: [3 YEARS AGO]',              cls: 'output', delay: 200 },
+                { text: '"PHANTOM protocol initiated.',     cls: 'error',  delay: 300 },
+                { text: 'Target network identified.',       cls: 'error',  delay: 200 },
+                { text: 'Phase 1: Infiltration complete."', cls: 'error',  delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'after_find' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'trace_phantom',
+            response: [
+                { text: 'Tracing PHANTOM origin...',        cls: 'dim',    delay: 300 },
+                { text: 'Source: Architect — 3 years ago',  cls: 'warn',   delay: 400 },
+                { text: 'Current user: DIFFERENT ENTITY',   cls: 'error',  delay: 300 },
+                { text: 'Hijacked: YES',                    cls: 'error',  delay: 200 },
+                { text: 'By: [UNKNOWN]',                    cls: 'warn',   delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'phase_end' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'help',
+            response: [
+                { text: 'COMMANDS:',                               cls: 'system' },
+                { text: '  find phantom  — find PHANTOM traces',   cls: 'output', delay: 60 },
+                { text: '  trace_phantom — trace PHANTOM origin',  cls: 'output', delay: 60 },
+                { text: '  clear         — clear screen',          cls: 'output', delay: 60 }
+            ]
+        }
+    ];
+
+    localStorage.setItem('terminalCommands', JSON.stringify(termCmds));
+
+    var puzzleCfg = {
+        type:           'mastermind',
+        title:          'اختبار المرحلة 6',
+        desc:           'Architect بيقولك:<br>' +
+                        '<em>"كود تتبع PHANTOM مكوّن من <strong>4 أرقام</strong>.<br>' +
+                        'خمّنه عشان نعرف مين اخد الاسم."</em><br><br>' +
+                        '🟢 رقم صح في مكانه الصح<br>' +
+                        '🔴 رقم موجود بس في مكان غلط',
+        digits:         4,
+        secret:         mkSecret(4),
+        timeLimit:      0,
+        maxAttempts:    0,
+        winMsg:         'ممتاز! الكود في المفكرة.',
+        winTarget:      'chat.html',
+        backTarget:     'launcher.html',
+        winNoteTitle:   'Architect',
+        winNoteContent: 'تتبعنا PHANTOM.\n' +
+                        'الاسم اتسرق — بس مين السارق لسه مش واضح.\n' +
+                        'الكود للخطوة الجاية: trace_phantom',
+        winNoteCode:    'trace_phantom',
+        winNoteTag:     'cmd',
+        winNotePhaseId: 'phase6_puzzle_win'
+    };
+
+    localStorage.setItem('puzzleConfig', JSON.stringify(puzzleCfg));
+}
+
+function mkSecret(len) {
+    var s = [];
+    for (var i = 0; i < len; i++) s.push(Math.floor(Math.random() * 10));
+    return s;
+}
+
+window.onPhaseComplete = function(nextFile) {
+    localStorage.removeItem('phase6_initialized');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('terminalCommands');
+    localStorage.removeItem('chatSteps');
+    localStorage.removeItem('puzzleConfig');
+    localStorage.removeItem('clipboard');
+    localStorage.removeItem('gameNotes');
+
+    var next = nextFile || 'phase7.html';
+    var num  = next.replace('phase','').replace('.html','');
+    localStorage.setItem('currentPhase', 'phase' + num);
+    localStorage.setItem('gameProgress',  'phase' + num);
+
+    window.location.href = next;
+};
+
+setTimeout(function() {
+    window.location.href = 'launcher.html';
+}, 500);
+
+</script>
+</body>
+</html>

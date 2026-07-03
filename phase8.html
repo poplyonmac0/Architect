@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المرحلة 8</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            color: #00e5ff;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @keyframes p { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .msg { font-size: 12px; letter-spacing: 2px; animation: p 1.2s infinite; }
+    </style>
+</head>
+<body>
+<div class="msg">PHASE 8 — LOADING...</div>
+<script>
+
+// ================================================================
+// phase8.html — المرحلة الثامنة
+// العنوان: "السيرفر الخارجي"
+// ================================================================
+// القصة:
+// اللاعب بيحاول يتتبع السيرفر الخارجي
+// اللي بيتنقل إليه بياناته.
+// Architect بيساعد — بس بشكل غريب شوية.
+// Hectari بيكشف إن السيرفر ده في إيد
+// حد قريب من Architect جداً.
+// وإن Architect بيعرف مكانه — ومش بيقوله.
+// اللاعب بيلاقي إن السيرفر مسجل باسم
+// يبدأ بـ "A.R" — نفس أول حروف Architect.
+// ================================================================
+
+var isFirstTime = localStorage.getItem('phase8_initialized') !== '1';
+
+localStorage.setItem('currentPhase', 'phase8');
+localStorage.setItem('gameProgress',  'phase8');
+
+if (isFirstTime) {
+    localStorage.setItem('phase8_initialized', '1');
+
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('clipboard');
+
+    localStorage.setItem('badge_chat',     '1');
+    localStorage.setItem('badge_terminal', '0');
+
+    var initNotes = [{
+        id:      Date.now(),
+        phaseId: 'phase8_welcome',
+        title:   'Architect',
+        content: 'السيرفر الخارجي ده —\n' +
+                 'هنحاول نتتبعه في المرحلة دي.\n' +
+                 'بس ممكن اللي هنلاقيه يفاجئك.',
+        code:    '',
+        tag:     'note',
+        date:    new Date().toISOString()
+    }];
+    localStorage.setItem('gameNotes', JSON.stringify(initNotes));
+
+    var chatSteps = [
+
+        {
+            id: 'start',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'دلوقتي نتتبع السيرفر.\n' +
+                            'ده هيكون صعب —\n' +
+                            'السيرفر بيخفي نفسه كويس.',
+                    delay:  1200
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'بس عندي طريقة.\n' +
+                            'روح Terminal وابدأ التتبع.',
+                    delay:  1000
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '💻 افتح Terminal',
+                target: 'terminal.html'
+            }
+        },
+
+        {
+            id: 'after_trace',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'السيرفر مسجل باسم "A.R"؟',
+                    delay:  800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'ده مش اسمي.\n' +
+                            '"A.R" ممكن تكون اختصار لأي حاجة.\n' +
+                            'Hectari بيحاول يضللك.',
+                    delay:  1400
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'حل اللغز ده —\n' +
+                            'وهنعرف الاسم الكامل خلف "A.R".',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '🧩 ابدأ اللغز',
+                target: 'puzzle_cipher.html'
+            }
+        },
+
+        {
+            id: 'after_puzzle',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الكود في المفكرة.\n' +
+                            'الصقه في Terminal.',
+                    delay:  800
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '📒 روح المفكرة',
+                        value:  'notes',
+                        action: 'open',
+                        target: 'notes.html'
+                    },
+                    {
+                        label:  '💻 روح Terminal',
+                        value:  'term',
+                        action: 'open',
+                        target: 'terminal.html'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'phase_end',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الاسم الكامل: "A.R.C" —\n' +
+                            'لسه مش كامل.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'بس ده بيقربنا.\n' +
+                            'في المرحلة الجاية هنكمل التتبع.',
+                    delay:  1200
+                },
+                {
+                    type:  'system',
+                    text:  '⚠️ تلميح: A.R.C... هتكمل إيه؟',
+                    delay: 800
+                },
+                {
+                    type:  'system',
+                    text:  '✅ اكتملت المرحلة الثامنة',
+                    delay: 600
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '▶ المرحلة التالية',
+                target: 'phase9.html'
+            }
+        }
+    ];
+
+    localStorage.setItem('chatSteps', JSON.stringify(chatSteps));
+
+    var termCmds = [
+
+        {
+            cmd:  '__hectari_intro__',
+            text: 'عايز تتتبع السيرفر؟\n' +
+                  'تمام — أنا هساعدك.\n' +
+                  'بس مش عشان أنا طيب —\n' +
+                  'عشان اللي هتلاقيه هيفتح عينيك.\n' +
+                  'اكتب: trace_server\n' +
+                  'وهتشوف.'
+        },
+
+        {
+            cmd: 'trace_server',
+            response: [
+                { text: 'Tracing external server...',        cls: 'dim',    delay: 300 },
+                { text: 'Hop 1: [MASKED]',                  cls: 'dim',    delay: 200 },
+                { text: 'Hop 2: [MASKED]',                  cls: 'dim',    delay: 200 },
+                { text: 'Hop 3: Partial data found.',       cls: 'warn',   delay: 300 },
+                { text: '',                                 cls: 'dim'               },
+                { text: 'SERVER REGISTRATION:',             cls: 'system', delay: 200 },
+                { text: 'Name: A.R [ENCRYPTED]',            cls: 'error',  delay: 300 },
+                { text: 'Created: [4 YEARS AGO]',           cls: 'output', delay: 200 },
+                { text: 'Location: [DEEP WEB]',             cls: 'warn',   delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'after_trace' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'decrypt_name',
+            response: [
+                { text: 'Decrypting server name...',         cls: 'dim',    delay: 300 },
+                { text: 'Partial decryption complete.',      cls: 'success',delay: 400 },
+                { text: 'Name so far: A.R.C',               cls: 'warn',   delay: 300 },
+                { text: 'Remaining: [STILL ENCRYPTED]',     cls: 'dim',    delay: 200 },
+                { text: 'Need more processing.',            cls: 'output', delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'phase_end' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'help',
+            response: [
+                { text: 'COMMANDS:',                               cls: 'system' },
+                { text: '  trace_server  — trace external server', cls: 'output', delay: 60 },
+                { text: '  decrypt_name  — decrypt server name',   cls: 'output', delay: 60 },
+                { text: '  clear         — clear screen',          cls: 'output', delay: 60 }
+            ]
+        }
+    ];
+
+    localStorage.setItem('terminalCommands', JSON.stringify(termCmds));
+
+    var puzzleCfg = {
+        type:           'cipher',
+        title:          'اختبار المرحلة 8',
+        desc:           'Architect بيقولك:<br>' +
+                        '<em>"اسم السيرفر مشفر.<br>' +
+                        'فك الشفرة دي عشان نعرف الاسم الكامل."</em>',
+        encrypted:      'XQBZNYP',
+        cipherKey:      {
+            X:'A', Q:'R', B:'C', Z:'H', N:'I', Y:'T', P:'E'
+        },
+        answer:         'ARCHITE',
+        winMsg:         'ممتاز! الكود في المفكرة.',
+        winTarget:      'chat.html',
+        backTarget:     'launcher.html',
+        winNoteTitle:   'Architect',
+        winNoteContent: 'الاسم المفكوك: ARCHITE...\n' +
+                        'لسه ناقص — بس بيكمل كلمة معروفة.\n' +
+                        'الكود للخطوة الجاية: decrypt_name',
+        winNoteCode:    'decrypt_name',
+        winNoteTag:     'cmd',
+        winNotePhaseId: 'phase8_puzzle_win'
+    };
+
+    localStorage.setItem('puzzleConfig', JSON.stringify(puzzleCfg));
+}
+
+window.onPhaseComplete = function(nextFile) {
+    localStorage.removeItem('phase8_initialized');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('terminalCommands');
+    localStorage.removeItem('chatSteps');
+    localStorage.removeItem('puzzleConfig');
+    localStorage.removeItem('clipboard');
+    localStorage.removeItem('gameNotes');
+
+    var next = nextFile || 'phase9.html';
+    var num  = next.replace('phase','').replace('.html','');
+    localStorage.setItem('currentPhase', 'phase' + num);
+    localStorage.setItem('gameProgress',  'phase' + num);
+
+    window.location.href = next;
+};
+
+setTimeout(function() {
+    window.location.href = 'launcher.html';
+}, 500);
+
+</script>
+</body>
+</html>

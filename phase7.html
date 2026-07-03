@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المرحلة 7</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            color: #00e5ff;
+            flex-direction: column;
+            gap: 8px;
+        }
+        @keyframes p { 0%,100%{opacity:0.3} 50%{opacity:1} }
+        .msg { font-size: 12px; letter-spacing: 2px; animation: p 1.2s infinite; }
+    </style>
+</head>
+<body>
+<div class="msg">PHASE 7 — LOADING...</div>
+<script>
+
+// ================================================================
+// phase7.html — المرحلة السابعة
+// العنوان: "البيانات المسروقة"
+// ================================================================
+// القصة:
+// Hectari بيكشف إن بيانات اللاعب
+// اتنقلت لسيرفر خارجي.
+// Architect بيقول إنه عارف بالموضوع —
+// وإنه حاول يوقفه بس فشل.
+// اللاعب بيكتشف إن Architect كان عارف
+// إن بياناته اتسرقت — وما قالوش.
+// ده بيزيد الشك أكتر.
+// ================================================================
+
+var isFirstTime = localStorage.getItem('phase7_initialized') !== '1';
+
+localStorage.setItem('currentPhase', 'phase7');
+localStorage.setItem('gameProgress',  'phase7');
+
+if (isFirstTime) {
+    localStorage.setItem('phase7_initialized', '1');
+
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('clipboard');
+
+    localStorage.setItem('badge_chat',     '1');
+    localStorage.setItem('badge_terminal', '0');
+
+    var initNotes = [{
+        id:      Date.now(),
+        phaseId: 'phase7_welcome',
+        title:   'Architect',
+        content: 'في المرحلة دي هتعرف حاجة مقلقة.\n' +
+                 'بس خليك هادي — أنا شغال على الموضوع.',
+        code:    '',
+        tag:     'note',
+        date:    new Date().toISOString()
+    }];
+    localStorage.setItem('gameNotes', JSON.stringify(initNotes));
+
+    var chatSteps = [
+
+        {
+            id: 'start',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'لازم أقولك حاجة مهمة.',
+                    delay:  800
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'بياناتك — جزء منها اتنقل.\n' +
+                            'مش كلها — بس جزء.',
+                    delay:  1200
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'أنا كنت عارف — بس ما قلتلكش\n' +
+                            'عشان ما أخوفكش.\n' +
+                            'كنت بحاول أوقفه وفشلت.',
+                    delay:  1600
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'روح Terminal —\n' +
+                            'Hectari هيقولك الحجم.',
+                    delay:  1000
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '💻 افتح Terminal',
+                target: 'terminal.html'
+            }
+        },
+
+        {
+            id: 'after_check',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'شفت الحجم؟\n' +
+                            '43% من بياناتك.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'أنا آسف إني ما قلتلكش من الأول.\n' +
+                            'بس الكلام ده مش هيرجع الـ 43%.',
+                    delay:  1200
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'اللي نقدر نعمله دلوقتي —\n' +
+                            'نوقف الباقي.\n' +
+                            'حل اللغز ده.',
+                    delay:  1200
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '🧩 ابدأ اللغز',
+                target: 'puzzle2.html'
+            }
+        },
+
+        {
+            id: 'after_puzzle',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'الكود في المفكرة.\n' +
+                            'الصقه في Terminal.',
+                    delay:  800
+                }
+            ],
+            action: {
+                type: 'choices',
+                choices: [
+                    {
+                        label:  '📒 روح المفكرة',
+                        value:  'notes',
+                        action: 'open',
+                        target: 'notes.html'
+                    },
+                    {
+                        label:  '💻 روح Terminal',
+                        value:  'term',
+                        action: 'open',
+                        target: 'terminal.html'
+                    }
+                ]
+            }
+        },
+
+        {
+            id: 'phase_end',
+            messages: [
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'وقفنا النقل مؤقتاً.\n' +
+                            'بس السيرفر الخارجي لسه شغال.',
+                    delay:  1000
+                },
+                {
+                    type:   'ai',
+                    sender: 'Architect',
+                    text:   'في المرحلة الجاية —\n' +
+                            'هنحاول نعرف مين السيرفر ده.',
+                    delay:  1200
+                },
+                {
+                    type:  'system',
+                    text:  '✅ اكتملت المرحلة السابعة',
+                    delay: 600
+                }
+            ],
+            action: {
+                type:   'button',
+                label:  '▶ المرحلة التالية',
+                target: 'phase8.html'
+            }
+        }
+    ];
+
+    localStorage.setItem('chatSteps', JSON.stringify(chatSteps));
+
+    var termCmds = [
+
+        {
+            cmd:  '__hectari_intro__',
+            text: 'Architect اعترف إنه كان عارف\n' +
+                  'إن بياناتك بتتنقل؟\n' +
+                  'ومقلكش؟\n' +
+                  'ده مش "نسيان" — ده قرار.\n' +
+                  'اكتب: data_status\n' +
+                  'وشوف الحجم الحقيقي.'
+        },
+
+        {
+            cmd: 'data_status',
+            response: [
+                { text: 'Checking data transfer status...',   cls: 'dim',    delay: 300 },
+                { text: '',                                   cls: 'dim'               },
+                { text: 'DATA TRANSFER REPORT:',             cls: 'system', delay: 200 },
+                { text: 'Total data: 100%',                  cls: 'output', delay: 200 },
+                { text: 'Transferred: 43%',                  cls: 'error',  delay: 300 },
+                { text: 'In progress: 12%',                  cls: 'warn',   delay: 200 },
+                { text: 'Remaining: 45%',                    cls: 'success',delay: 200 },
+                { text: '',                                   cls: 'dim'               },
+                { text: 'Destination: PHANTOM SERVER',       cls: 'error',  delay: 300 },
+                { text: 'Location: [ENCRYPTED]',             cls: 'warn',   delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'after_check' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'stop_transfer',
+            response: [
+                { text: 'Stopping active transfer...',        cls: 'dim',    delay: 300 },
+                { text: 'Transfer paused.',                   cls: 'success',delay: 400 },
+                { text: 'In-progress: STOPPED',              cls: 'success',delay: 200 },
+                { text: '',                                   cls: 'dim'               },
+                { text: 'WARNING: Server still active.',     cls: 'warn',   delay: 200 },
+                { text: 'Transfer may resume.',              cls: 'warn',   delay: 200 }
+            ],
+            trigger: {
+                type: 'multi',
+                actions: [
+                    { type: 'hectari_typing' },
+                    { type: 'set_chat_step', step: 'phase_end' }
+                ]
+            }
+        },
+
+        {
+            cmd: 'help',
+            response: [
+                { text: 'COMMANDS:',                                 cls: 'system' },
+                { text: '  data_status   — check transfer status',   cls: 'output', delay: 60 },
+                { text: '  stop_transfer — stop active transfer',    cls: 'output', delay: 60 },
+                { text: '  clear         — clear screen',            cls: 'output', delay: 60 }
+            ]
+        }
+    ];
+
+    localStorage.setItem('terminalCommands', JSON.stringify(termCmds));
+
+    var puzzleCfg = {
+        type:           'flow',
+        title:          'اختبار المرحلة 7',
+        desc:           'Architect بيقولك:<br>' +
+                        '<em>"قنوات النقل شبكة معقدة.<br>' +
+                        'وصّل الألوان الصح عشان توقف النقل."</em>',
+        difficulty:     'medium',
+        timeLimit:      0,
+        winMsg:         'ممتاز! الكود في المفكرة.',
+        winTarget:      'chat.html',
+        backTarget:     'launcher.html',
+        winNoteTitle:   'Architect',
+        winNoteContent: 'قنوات النقل اتقطعت.\n' +
+                        'الكود للخطوة الجاية: stop_transfer',
+        winNoteCode:    'stop_transfer',
+        winNoteTag:     'cmd',
+        winNotePhaseId: 'phase7_puzzle_win'
+    };
+
+    localStorage.setItem('puzzleConfig', JSON.stringify(puzzleCfg));
+}
+
+window.onPhaseComplete = function(nextFile) {
+    localStorage.removeItem('phase7_initialized');
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('chatStep');
+    localStorage.removeItem('chatStepShown');
+    localStorage.removeItem('termHistory');
+    localStorage.removeItem('terminalCommands');
+    localStorage.removeItem('chatSteps');
+    localStorage.removeItem('puzzleConfig');
+    localStorage.removeItem('clipboard');
+    localStorage.removeItem('gameNotes');
+
+    var next = nextFile || 'phase8.html';
+    var num  = next.replace('phase','').replace('.html','');
+    localStorage.setItem('currentPhase', 'phase' + num);
+    localStorage.setItem('gameProgress',  'phase' + num);
+
+    window.location.href = next;
+};
+
+setTimeout(function() {
+    window.location.href = 'launcher.html';
+}, 500);
+
+</script>
+</body>
+</html>
